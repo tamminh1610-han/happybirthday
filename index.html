@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Birthday Journey | Fantasy Night Sky</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for UI icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Canvas Layers -->
+    <canvas id="nebula-canvas"></canvas>
+    <canvas id="starfield-canvas"></canvas>
+    <canvas id="sparkle-canvas"></canvas>
+
+    <!-- Global Sound Control -->
+    <button id="sound-toggle" class="sound-control-btn" title="Toggle Sound" aria-label="Toggle Sound">
+        <i class="fa-solid fa-volume-xmark"></i>
+    </button>
+
+    <!-- Global Reset Button (Hidden by default, shown at the end) -->
+    <button id="restart-btn" class="glass-btn secondary-btn hide" title="Start Over">
+        <i class="fa-solid fa-rotate-left"></i> Replay Journey
+    </button>
+
+    <!-- ==================== PHASE 1: WELCOME SCREEN ==================== -->
+    <section id="welcome-screen" class="active-screen">
+        <div class="welcome-container glass-card">
+            <h1 class="welcome-title text-glow">A Special Birthday Journey</h1>
+            <p class="welcome-subtitle">Step into a world of starlight, magic, and sweet memories.</p>
+            <button id="start-btn" class="glow-btn">
+                <span>Start Journey</span>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
+        </div>
+        <div class="scroll-hint">
+            <span>Prepare your sound for the best experience</span>
+        </div>
+    </section>
+
+    <!-- ==================== PHASE 2: PASSWORD SCREEN ==================== -->
+    <section id="password-screen" class="hide">
+        <div class="password-container glass-card">
+            <div class="lock-icon-wrapper">
+                <div class="lock-glow"></div>
+                <i class="fa-solid fa-lock lock-icon"></i>
+            </div>
+            <h2 class="section-title">Celestial Lock</h2>
+            <p class="section-desc">To unlock the birthday wishes, enter the secret code.</p>
+            
+            <div class="password-input-group">
+                <input type="password" id="secret-password" placeholder="Enter the secret password..." maxlength="10">
+                <span class="input-focus-line"></span>
+            </div>
+            
+            <button id="unlock-btn" class="glow-btn gold-glow">
+                <span>Unlock Starlight</span>
+                <i class="fa-solid fa-key"></i>
+            </button>
+            <p class="hint-text">Clue: The date of birth (e.g., <b>1212</b>)</p>
+        </div>
+    </section>
+
+    <!-- ==================== PHASE 3: BAKING GAME SCREEN ==================== -->
+    <section id="baking-screen" class="hide">
+        <div class="baking-grid">
+            <!-- Left Side: Ingredients Selection -->
+            <div class="ingredients-panel glass-card">
+                <div class="panel-header">
+                    <h2>Select Ingredients</h2>
+                    <p>Pick all the secret elements to bake a magical birthday cake</p>
+                </div>
+                <div class="ingredients-grid" id="ingredients-container">
+                    <!-- Ingredients will be rendered dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Right Side: Checklist and Progress -->
+            <div class="checklist-panel glass-card">
+                <div class="panel-header">
+                    <h2>Baking Recipe</h2>
+                    <p>Ingredients checklist</p>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-labels">
+                        <span>Preparation Progress</span>
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="checklist-container" id="checklist-container">
+                    <!-- Checklist items rendered dynamically -->
+                </div>
+
+                <button id="bake-btn" class="glow-btn inactive" disabled>
+                    <span>Proceed to Bake</span>
+                    <i class="fa-solid fa-fire-burner"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PHASE 4: INTERACTIVE BAKING STEPS ==================== -->
+    <section id="interaction-screen" class="hide">
+        <div class="interaction-container glass-card">
+            <!-- Step Indicators -->
+            <div class="steps-indicator">
+                <div class="step-indicator active" data-step="A"><span>1</span> Stir</div>
+                <div class="step-line"></div>
+                <div class="step-indicator" data-step="B"><span>2</span> Knead</div>
+                <div class="step-line"></div>
+                <div class="step-indicator" data-step="C"><span>3</span> Shape</div>
+                <div class="step-line"></div>
+                <div class="step-indicator" data-step="D"><span>4</span> Decorate</div>
+            </div>
+
+            <!-- Dynamic step contents -->
+            <div class="step-content active" id="step-A-content">
+                <h2 class="step-title">Step 1 — Stirring the Batter</h2>
+                <p class="step-instruction">Drag your cursor in circles inside the bowl to mix the ingredients together.</p>
+                <div class="interactive-area" id="stir-area">
+                    <div class="three-canvas-container" id="stir-canvas-container"></div>
+                    <div class="swirl-overlay">
+                        <i class="fa-solid fa-arrows-spin spinning-icon"></i>
+                    </div>
+                </div>
+                <div class="step-progress-wrapper">
+                    <span>Stir Progress:</span>
+                    <div class="step-progress-bar"><div id="stir-progress-fill" class="step-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="step-content hide" id="step-B-content">
+                <h2 class="step-title">Step 2 — Kneading the Dough</h2>
+                <p class="step-instruction">Drag and pull the soft dough to knead it into perfect elastic consistency.</p>
+                <div class="interactive-area" id="knead-area">
+                    <div class="three-canvas-container" id="knead-canvas-container"></div>
+                    <div class="knead-overlay">
+                        <i class="fa-solid fa-up-down-left-right pulsing-icon"></i>
+                    </div>
+                </div>
+                <div class="step-progress-wrapper">
+                    <span>Knead Progress:</span>
+                    <div class="step-progress-bar"><div id="knead-progress-fill" class="step-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="step-content hide" id="step-C-content">
+                <h2 class="step-title">Step 3 — Shape Your Cake</h2>
+                <p class="step-instruction">Select the magical base shape of your birthday cake.</p>
+                <div class="shape-selection-grid">
+                    <div class="shape-option active-shape" data-shape="circle">
+                        <div class="shape-icon-wrapper"><i class="fa-regular fa-circle"></i></div>
+                        <span>Celestial Circle</span>
+                    </div>
+                    <div class="shape-option" data-shape="heart">
+                        <div class="shape-icon-wrapper"><i class="fa-regular fa-heart"></i></div>
+                        <span>Romantic Heart</span>
+                    </div>
+                    <div class="shape-option" data-shape="star">
+                        <div class="shape-icon-wrapper"><i class="fa-regular fa-star"></i></div>
+                        <span>Fantasy Star</span>
+                    </div>
+                </div>
+                <div class="interactive-area shaping-preview" id="shape-area">
+                    <div class="three-canvas-container" id="shape-canvas-container"></div>
+                </div>
+                <button id="confirm-shape-btn" class="glow-btn gold-glow">
+                    <span>Confirm Shape</span>
+                    <i class="fa-solid fa-check"></i>
+                </button>
+            </div>
+
+            <div class="step-content hide" id="step-D-content">
+                <h2 class="step-title">Step 4 — Add Toppings & Decoration</h2>
+                <p class="step-instruction">Tap on the toppings below to sprinkle them beautifully onto the cake!</p>
+                <div class="toppings-shelf">
+                    <button class="topping-item-btn" data-topping="cream">
+                        <i class="fa-solid fa-cloud"></i>
+                        <span>Cream</span>
+                    </button>
+                    <button class="topping-item-btn" data-topping="candle">
+                        <i class="fa-solid fa-candle-holder"></i>
+                        <span>Candles</span>
+                    </button>
+                    <button class="topping-item-btn" data-topping="strawberry">
+                        <i class="fa-solid fa-seedling"></i>
+                        <span>Strawberry</span>
+                    </button>
+                    <button class="topping-item-btn" data-topping="chocolate">
+                        <i class="fa-solid fa-cookie"></i>
+                        <span>Chocolate</span>
+                    </button>
+                    <button class="topping-item-btn" data-topping="sprinkles">
+                        <i class="fa-solid fa-snowflake"></i>
+                        <span>Sprinkles</span>
+                    </button>
+                </div>
+                <div class="interactive-area decoration-preview" id="decorate-area">
+                    <div class="three-canvas-container" id="decorate-canvas-container"></div>
+                </div>
+                <button id="finish-decor-btn" class="glow-btn">
+                    <span>Complete Cake!</span>
+                    <i class="fa-solid fa-cake-candles"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PHASE 5 & 6: 3D CAKE & CUTTING ==================== -->
+    <section id="cake-completion-screen" class="hide">
+        <div class="completion-container">
+            <div class="cake-view-panel">
+                <div class="three-canvas-container" id="final-cake-canvas-container"></div>
+                
+                <div class="cake-instructions glass-card">
+                    <h2 id="final-title" class="text-glow">Your Magical Cake is Ready!</h2>
+                    <p id="final-desc">Rotate, zoom, and admire your custom-made 3D birthday cake.</p>
+                    
+                    <div class="action-buttons-group">
+                        <button id="cut-cake-btn" class="glow-btn slice-btn">
+                            <i class="fa-solid fa-knife"></i> Cut The Cake!
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Wish Overlay Cards (Photos and Wishes) -->
+            <div id="wishes-overlay" class="wishes-overlay-container hide">
+                <!-- Memory Polaroid Frames -->
+                <div class="polaroid-carousel" id="polaroids-container">
+                    <!-- Insert custom photos and memories dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Libraries (Three.js and GSAP via CDNs) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <!-- Custom Modules -->
+    <script src="sound.js"></script>
+    <script src="three-cake.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
